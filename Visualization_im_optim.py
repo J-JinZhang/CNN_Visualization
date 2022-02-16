@@ -21,32 +21,7 @@ from inception_net import Froth_Inception
 import matplotlib.pyplot as plt
 
 
-class XRF_ResNet(nn.Module):
-    def __init__(self, num_classes=1, aux_logits=False, transform_input=False):
-        super(XRF_ResNet, self).__init__()
-        self.features = resnet34()
-        self.regressor =  nn.Sequential(
-            nn.Linear(515, 1024), 
-            nn.ReLU(inplace=True),
-            nn.Linear(1024, 128), 
-            nn.ReLU(inplace=True),
-            nn.Linear(128, 3))
 
-        for m in self.regressor:
-            if isinstance(m, nn.Linear):
-                nn.init.xavier_uniform_(m.weight, gain=1.0)
-
-    def forward(self, x0, x1):
-        x1 = self.features(x1)
-        #print(x1.shape)
-        x1 = F.avg_pool2d(x1, kernel_size=10)  #
-        plt.bar(range(x1.size(1)), x1.view(-1).data.numpy())
-        plt.show()
-        x = torch.cat((x0.view(x0.size(0), -1), x1.view(x1.size(0), -1)), dim=1)
-        x = self.regressor(x)
-        return x
-    
-    
 
                 
                 
